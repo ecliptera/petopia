@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "taxon": "DOG",
+  "species": "LABRADOR",
+  "name": "Buddy",
+  "birthDate": "2020-01-01",
+  "adoption": null,
+  "status": null
+}
