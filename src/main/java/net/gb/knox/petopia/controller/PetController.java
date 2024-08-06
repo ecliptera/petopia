@@ -6,6 +6,8 @@ import net.gb.knox.petopia.domain.UpdatePetRequestDto;
 import net.gb.knox.petopia.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -72,5 +74,15 @@ public class PetController {
     public ResponseEntity<PetResponseDto> getUnadoptedPet(@PathVariable Integer id) {
         var petResponseDto = petService.getUnadopted(id);
         return ResponseEntity.ok(petResponseDto);
+    }
+
+    @PostMapping("/pets/{id}/adoptions")
+    public ResponseEntity<PetResponseDto> adoptPet(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Integer id
+    ) throws URISyntaxException {
+        var petResponseDto = petService.adopt(jwt.getSubject(), id);
+        var location = new URI(String.format("/pets/%s/adoptions/%s", id, petResponseDto.adoption().getId()));
+        return ResponseEntity.created(location).body(petResponseDto);
     }
 }

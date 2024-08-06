@@ -22,18 +22,20 @@ public class AdoptionModelUnitTest {
                 Arguments.of(
                         new AdoptionModel(
                                 1,
+                                "006620a5-c90a-431a-9192-e23014620380",
                                 LocalDateTime.of(2024, 1, 1, 12, 0),
                                 new PetModel()
                         ),
                         0
                 ),
                 Arguments.of(
-                        new AdoptionModel(1, null, null),
-                        1
+                        new AdoptionModel(1, null, null, null),
+                        2
                 ),
                 Arguments.of(
                         new AdoptionModel(
                                 1,
+                                "006620a5-c90a-431a-9192-e23014620380",
                                 LocalDateTime.of(3000, 1, 1, 12, 0),
                                 null
                         ),

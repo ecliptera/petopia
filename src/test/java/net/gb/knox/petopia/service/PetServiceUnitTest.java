@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.domain.Sort;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class PetServiceUnitTest {
 
     private final PetRepository petRepository = mock(PetRepository.class);
-    private final PetService petService = new PetService(petRepository);
+    private final PetService petService = new PetService(Clock.systemDefaultZone(), petRepository);
 
     private static Stream<Arguments> updatePetRequestDtoProvider() {
         return Stream.of(
@@ -57,6 +58,23 @@ public class PetServiceUnitTest {
 
         verify(petRepository, times(1)).save(any(PetModel.class));
         assertNotNull(petResponseDto);
+    }
+
+    @Test
+    public void testAdopt() {
+        when(petRepository.findById(anyInt())).thenReturn(Optional.of(new PetModel()));
+        when(petRepository.save(any(PetModel.class))).then(invocation -> {
+            PetModel petModel = invocation.getArgument(0);
+            petModel.setId(1);
+            return petModel;
+        });
+
+        var petResponseDto = petService.adopt("006620a5-c90a-431a-9192-e23014620380", 1);
+
+        verify(petRepository, times(1)).save(any(PetModel.class));
+        assertNotNull(petResponseDto);
+        assertNotNull(petResponseDto.adoption());
+        assertNotNull(petResponseDto.status());
     }
 
     @Test

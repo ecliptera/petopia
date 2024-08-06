@@ -33,6 +33,7 @@ public class AdoptionModelIntegrationTest {
     private AdoptionModel createAdoptionModel() {
         var adoption = new AdoptionModel();
         adoption.setAdoptionDateTime(LocalDateTime.now());
+        adoption.setAdopterId("006620a5-c90a-431a-9192-e23014620380");
 
         return adoption;
     }

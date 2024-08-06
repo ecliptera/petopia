@@ -5,21 +5,28 @@ import net.gb.knox.petopia.converter.PetConverter;
 import net.gb.knox.petopia.domain.CreatePetRequestDto;
 import net.gb.knox.petopia.domain.PetResponseDto;
 import net.gb.knox.petopia.domain.UpdatePetRequestDto;
+import net.gb.knox.petopia.model.AdoptionModel;
 import net.gb.knox.petopia.model.PetModel;
+import net.gb.knox.petopia.model.StatusModel;
 import net.gb.knox.petopia.repository.PetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class PetService {
 
+    private final Clock clock;
+
     private final PetRepository petRepository;
 
     @Autowired
-    public PetService(PetRepository petRepository) {
+    public PetService(Clock clock, PetRepository petRepository) {
+        this.clock = clock;
         this.petRepository = petRepository;
     }
 
@@ -54,6 +61,22 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
+    public PetResponseDto adopt(String userId, int petId) throws EntityNotFoundException {
+        var petModel = findById(petId);
+
+        var adoptionModel = new AdoptionModel();
+        adoptionModel.setAdoptionDateTime(LocalDateTime.now(clock));
+        adoptionModel.setAdopterId(userId);
+        petModel.setAdoption(adoptionModel);
+
+        var statusModel = new StatusModel();
+        petModel.setStatus(statusModel);
+
+        petRepository.save(petModel);
+
+        return PetConverter.modelToResponseDto(petModel);
+    }
+
     public List<PetResponseDto> getAll(String sortBy, String direction) {
         var sort = createSort(sortBy, direction);
         var petModels = sort == null ? petRepository.findAll() : petRepository.findAll(sort);
@@ -73,7 +96,7 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto getUnadopted(int id) {
+    public PetResponseDto getUnadopted(int id) throws EntityNotFoundException {
         var petModel = petRepository.findByIdAndAdoptionIdNull(id);
         if (petModel == null) {
             throw new EntityNotFoundException(String.format("No unadopted pet model found with id = %s", id));

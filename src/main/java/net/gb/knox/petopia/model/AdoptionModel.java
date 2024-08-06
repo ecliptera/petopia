@@ -22,6 +22,9 @@ public class AdoptionModel {
     private Integer id;
 
     @NotNull
+    private String adopterId;
+
+    @NotNull
     @PastOrPresent
     private LocalDateTime adoptionDateTime;
 

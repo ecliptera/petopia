@@ -36,6 +36,7 @@ public class PetRepositoryIntegrationTest {
 
     private AdoptionModel createAdoptionModel() {
         var adoptionModel = new AdoptionModel();
+        adoptionModel.setAdopterId("006620a5-c90a-431a-9192-e23014620380");
         adoptionModel.setAdoptionDateTime(LocalDateTime.now());
 
         return adoptionModel;
