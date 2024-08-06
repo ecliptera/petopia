@@ -46,6 +46,9 @@ public class PetControllerIntegrationTest {
     @Value("classpath:data/get-all-unadopted-pets-response.json")
     private Resource getAllUnadoptedPetsResponseResource;
 
+    @Value("classpath:data/get-unadopted-pet-response.json")
+    private Resource getUnadoptedPetResponseResource;
+
     @Test
     @DirtiesContext
     @WithMockUser(roles = "admin")
@@ -141,5 +144,20 @@ public class PetControllerIntegrationTest {
                 result.getResponse().getContentAsString(),
                 true
         );
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser
+    public void testGetUnadoptedPet() throws Exception {
+        var getUnadoptedPetResponseJson = getUnadoptedPetResponseResource.getContentAsString(Charset.defaultCharset());
+
+        var result = api
+                .perform(get("/pets/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JSONAssert.assertEquals(getUnadoptedPetResponseJson, result.getResponse().getContentAsString(), true);
     }
 }

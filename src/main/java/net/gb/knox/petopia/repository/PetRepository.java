@@ -12,4 +12,6 @@ public interface PetRepository extends JpaRepository<PetModel, Integer> {
     List<PetModel> findAllByAdoptionIdNull();
 
     List<PetModel> findAllByAdoptionIdNull(Sort sort);
+
+    PetModel findByIdAndAdoptionIdNull(Integer id);
 }

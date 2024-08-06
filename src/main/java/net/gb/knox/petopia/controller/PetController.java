@@ -67,4 +67,10 @@ public class PetController {
         var petResponseDtos = petService.getAllUnadopted(sortBy, direction);
         return ResponseEntity.ok(petResponseDtos);
     }
+
+    @GetMapping("/pets/{id}")
+    public ResponseEntity<PetResponseDto> getUnadoptedPet(@PathVariable Integer id) {
+        var petResponseDto = petService.getUnadopted(id);
+        return ResponseEntity.ok(petResponseDto);
+    }
 }

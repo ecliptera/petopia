@@ -73,6 +73,15 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
+    public PetResponseDto getUnadopted(int id) {
+        var petModel = petRepository.findByIdAndAdoptionIdNull(id);
+        if (petModel == null) {
+            throw new EntityNotFoundException(String.format("No unadopted pet model found with id = %s", id));
+        }
+
+        return PetConverter.modelToResponseDto(petModel);
+    }
+
     public PetResponseDto update(int id, UpdatePetRequestDto updatePetRequestDto) throws EntityNotFoundException {
         var petModel = findById(id);
 

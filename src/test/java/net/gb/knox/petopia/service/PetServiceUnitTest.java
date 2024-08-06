@@ -129,6 +129,24 @@ public class PetServiceUnitTest {
         assertThrows(EntityNotFoundException.class, () -> petService.get(1));
     }
 
+    @Test
+    public void testGetUnadopted() {
+        var petModel = new PetModel();
+        petModel.setId(1);
+        when(petRepository.findByIdAndAdoptionIdNull(anyInt())).thenReturn(petModel);
+
+        var petResponseDto = petService.getUnadopted(1);
+
+        verify(petRepository, times(1)).findByIdAndAdoptionIdNull(anyInt());
+        assertNotNull(petResponseDto);
+    }
+
+    @Test
+    public void testGetUnadoptedThrows() {
+        when(petRepository.findByIdAndAdoptionIdNull(anyInt())).thenReturn(null);
+        assertThrows(EntityNotFoundException.class, () -> petService.getUnadopted(1));
+    }
+
     @ParameterizedTest
     @MethodSource("updatePetRequestDtoProvider")
     public void testUpdate(UpdatePetRequestDto updatePetRequestDto) {
