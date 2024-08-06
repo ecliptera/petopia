@@ -5,6 +5,12 @@ spring:
     username: sa
     password: password
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:8080/no-path"
+
   jpa:
     hibernate:
       ddl-auto: create-drop

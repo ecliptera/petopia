@@ -11,6 +11,12 @@ spring:
     hibernate:
       ddl-auto: update
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:8000/realms/api.knox.gb.net/protocol/openid-connect/certs"
+
 server:
   servlet:
     context-path: /petopia
