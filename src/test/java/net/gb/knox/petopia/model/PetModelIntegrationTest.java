@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +20,14 @@ public class PetModelIntegrationTest {
     @Autowired
     private EntityManager entityManager;
 
-    private PetModel base() {
+    private AdoptionModel createAdoptionModel() {
+        var adoption = new AdoptionModel();
+        adoption.setAdoptionDateTime(LocalDateTime.now());
+
+        return adoption;
+    }
+
+    private PetModel createPetModel() {
         var pet = new PetModel();
         pet.setTaxon(Taxon.DOG);
         pet.setSpecies(Species.LABRADOR);
@@ -37,7 +45,7 @@ public class PetModelIntegrationTest {
     @Test
     @DirtiesContext
     public void testPersistPetModel() {
-        var pet = base();
+        var pet = createPetModel();
 
         persist(pet);
 
@@ -50,9 +58,9 @@ public class PetModelIntegrationTest {
     @Test
     @DirtiesContext
     public void testPersistAdoptionModel() {
-        var pet = base();
+        var pet = createPetModel();
 
-        var adoption = new AdoptionModel();
+        var adoption = createAdoptionModel();
         pet.setAdoption(adoption);
 
         persist(pet);
@@ -66,7 +74,7 @@ public class PetModelIntegrationTest {
     @Test
     @DirtiesContext
     public void testPersistStatusModel() {
-        var pet = base();
+        var pet = createPetModel();
 
         var status = new StatusModel();
         pet.setStatus(status);

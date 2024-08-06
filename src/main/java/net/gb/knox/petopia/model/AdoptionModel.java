@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -26,5 +27,6 @@ public class AdoptionModel {
 
     @OneToOne(mappedBy = "adoption")
     @JsonBackReference
+    @ToString.Exclude
     private PetModel pet;
 }

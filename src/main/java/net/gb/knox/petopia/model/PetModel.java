@@ -36,12 +36,12 @@ public class PetModel {
     @PastOrPresent
     private LocalDate birthDate;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     @JsonManagedReference
     private AdoptionModel adoption;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn
     @JsonManagedReference
     private StatusModel status;
