@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,8 +43,12 @@ public class PetControllerIntegrationTest {
     @Value("classpath:data/admin-update-pet-response.json")
     private Resource adminUpdatePetResponseResource;
 
+    @Value("classpath:data/get-all-unadopted-pets-response.json")
+    private Resource getAllUnadoptedPetsResponseResource;
+
     @Test
     @DirtiesContext
+    @WithMockUser(roles = "admin")
     public void testCreatePet() throws Exception {
         var adminCreatePetRequestJson = adminCreatePetRequestResource.getContentAsString(Charset.defaultCharset());
         var adminCreatePetResponseJson = adminCreatePetResponseResource.getContentAsString(Charset.defaultCharset());
@@ -63,6 +68,7 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
     public void testGetAllPets() throws Exception {
         var adminGetAllPetsResponseJson = adminGetAllPetsResponseResource.getContentAsString(Charset.defaultCharset());
 
@@ -77,6 +83,7 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
     public void testGetPetById() throws Exception {
         var adminGetPetResponseJson = adminGetPetResponseResource.getContentAsString(Charset.defaultCharset());
 
@@ -91,6 +98,7 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
     public void testUpdatePet() throws Exception {
         var adminUpdatePetRequestJson = adminUpdatePetRequestResource.getContentAsString(Charset.defaultCharset());
         var adminUpdatePetResponseJson = adminUpdatePetResponseResource.getContentAsString(Charset.defaultCharset());
@@ -110,7 +118,28 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
     public void testDeletePet() throws Exception {
         api.perform(delete("/admin/pets/2")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser
+    public void testGetAllUnadoptedPets() throws Exception {
+        var getAllUnadoptedPetsResponseJson = getAllUnadoptedPetsResponseResource
+                .getContentAsString(Charset.defaultCharset());
+
+        var result = api
+                .perform(get("/pets"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JSONAssert.assertEquals(
+                getAllUnadoptedPetsResponseJson,
+                result.getResponse().getContentAsString(),
+                true
+        );
     }
 }

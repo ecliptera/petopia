@@ -23,6 +23,20 @@ public class PetService {
         this.petRepository = petRepository;
     }
 
+    private Sort createSort(String sortBy, String direction) {
+        Sort sort = null;
+
+        if (sortBy != null) {
+            if (direction.equalsIgnoreCase("asc")) {
+                sort = Sort.by(Sort.Direction.ASC, sortBy);
+            } else if (direction.equalsIgnoreCase("desc")) {
+                sort = Sort.by(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        return sort;
+    }
+
     private PetModel findById(int id) throws EntityNotFoundException {
         var foundPetModel = petRepository.findById(id);
         if (foundPetModel.isEmpty()) {
@@ -41,17 +55,15 @@ public class PetService {
     }
 
     public List<PetResponseDto> getAll(String sortBy, String direction) {
-        Sort sort = null;
-
-        if (sortBy != null) {
-            if (direction.equalsIgnoreCase("asc")) {
-                sort = Sort.by(Sort.Direction.ASC, sortBy);
-            } else if (direction.equalsIgnoreCase("desc")) {
-                sort = Sort.by(Sort.Direction.DESC, sortBy);
-            }
-        }
-
+        var sort = createSort(sortBy, direction);
         var petModels = sort == null ? petRepository.findAll() : petRepository.findAll(sort);
+
+        return petModels.stream().map(PetConverter::modelToResponseDto).toList();
+    }
+
+    public List<PetResponseDto> getAllUnadopted(String sortBy, String direction) {
+        var sort = createSort(sortBy, direction);
+        var petModels = sort == null ? petRepository.findAllByAdoptionIdNull() : petRepository.findAllByAdoptionIdNull(sort);
 
         return petModels.stream().map(PetConverter::modelToResponseDto).toList();
     }

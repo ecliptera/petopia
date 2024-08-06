@@ -4,6 +4,15 @@
   "species": "RAGDOLL",
   "name": "Penny",
   "birthDate": "2018-02-01",
-  "adoption": null,
-  "status": null
+  "adoption": {
+    "id": 1,
+    "adoptionDateTime": "2024-01-01T00:00:00"
+  },
+  "status": {
+    "id": 1,
+    "cleanliness": 100,
+    "happiness": 100,
+    "hunger": 100,
+    "tiredness": 100
+  }
 }

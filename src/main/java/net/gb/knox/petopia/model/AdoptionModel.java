@@ -1,5 +1,6 @@
 package net.gb.knox.petopia.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -24,5 +25,6 @@ public class AdoptionModel {
     private LocalDateTime adoptionDateTime;
 
     @OneToOne(mappedBy = "adoption")
+    @JsonBackReference
     private PetModel pet;
 }

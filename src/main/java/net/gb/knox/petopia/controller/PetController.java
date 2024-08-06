@@ -58,4 +58,13 @@ public class PetController {
         petService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/pets")
+    public ResponseEntity<List<PetResponseDto>> getAllUnadoptedPets(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String direction
+    ) {
+        var petResponseDtos = petService.getAllUnadopted(sortBy, direction);
+        return ResponseEntity.ok(petResponseDtos);
+    }
 }

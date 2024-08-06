@@ -86,6 +86,32 @@ public class PetServiceUnitTest {
     }
 
     @Test
+    public void testGetAllUnadopted() {
+        var petModel = new PetModel();
+        petModel.setId(1);
+        when(petRepository.findAllByAdoptionIdNull()).thenReturn(List.of(petModel));
+
+        var petResponseDtos = petService.getAllUnadopted(null, null);
+
+        verify(petRepository, times(1)).findAllByAdoptionIdNull();
+        assertNotNull(petResponseDtos);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"name, asc", "name, desc", "name, invalid"})
+    public void testGetAllUnadoptedWithSort(String sortBy, String direction) {
+        var petModel = new PetModel();
+        petModel.setId(1);
+        when(petRepository.findAllByAdoptionIdNull(any(Sort.class))).thenReturn(List.of(petModel));
+
+        var petResponseDtos = petService.getAllUnadopted(sortBy, direction);
+
+        var numberOfInvocations = List.of("asc", "desc").contains(direction) ? 1 : 0;
+        verify(petRepository, times(numberOfInvocations)).findAllByAdoptionIdNull(any(Sort.class));
+        assertNotNull(petResponseDtos);
+    }
+
+    @Test
     public void testGet() {
         var petModel = new PetModel();
         petModel.setId(1);
