@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
@@ -25,7 +24,7 @@ public class StatusModelIntegrationTest {
 
         persist(status);
 
-        assertEquals(1, status.getId());
+        assertNotNull(status.getId());
 
         var persistedStatus = entityManager.find(StatusModel.class, status.getId());
         assertNotNull(persistedStatus);

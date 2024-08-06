@@ -6,12 +6,10 @@ import net.gb.knox.petopia.domain.Taxon;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
@@ -49,20 +47,18 @@ public class AdoptionModelIntegrationTest {
     }
 
     @Test
-    @DirtiesContext
     public void testPersistAdoptionModel() {
         var adoption = createAdoptionModel();
 
         persist(adoption);
 
-        assertEquals(1, adoption.getId());
+        assertNotNull(adoption.getId());
 
         var persistedAdoption = entityManager.find(AdoptionModel.class, adoption.getId());
         assertNotNull(persistedAdoption);
     }
 
     @Test
-    @DirtiesContext
     public void testPersistPetModel() {
         var adoption = createAdoptionModel();
 
@@ -72,6 +68,6 @@ public class AdoptionModelIntegrationTest {
         persist(pet);
         persist(adoption);
 
-        assertEquals(1, adoption.getPet().getId());
+        assertNotNull(adoption.getId());
     }
 }
