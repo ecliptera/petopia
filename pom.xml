@@ -11,8 +11,8 @@
     <groupId>net.gb.knox</groupId>
     <artifactId>petopia</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>petopia</name>
-    <description>petopia</description>
+    <name>Petopia</name>
+    <description>A REST API for managing virtual pets.</description>
     <url/>
     <licenses>
         <license/>
