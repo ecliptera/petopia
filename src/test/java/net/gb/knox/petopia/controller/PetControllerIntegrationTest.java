@@ -157,6 +157,14 @@ public class PetControllerIntegrationTest {
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
     @WithMockUser(roles = "admin")
+    public void testGetPetByIdNotFound() throws Exception {
+        api.perform(get("/admin/pets/100")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
     public void testUpdatePet() throws Exception {
         var adminUpdatePetRequestJson = adminUpdatePetRequestResource.getContentAsString(Charset.defaultCharset());
         var adminUpdatePetResponseJson = adminUpdatePetResponseResource.getContentAsString(Charset.defaultCharset());
@@ -171,6 +179,27 @@ public class PetControllerIntegrationTest {
                 .andReturn();
 
         JSONAssert.assertEquals(adminUpdatePetResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
+    public void testUpdatePetBadRequest() throws Exception {
+        api.perform(patch("/admin/pets/100")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser(roles = "admin")
+    public void testUpdatePetNotFound() throws Exception {
+        var adminUpdatePetRequestJson = adminUpdatePetRequestResource.getContentAsString(Charset.defaultCharset());
+
+        api.perform(patch("/admin/pets/100")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(adminUpdatePetRequestJson))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -199,7 +228,7 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
-    public void testGetUserPets() throws Exception {
+    public void testGetUserPet() throws Exception {
         var bearerToken = withJwt();
         var getUserPetResponseJson = getUserPetResponseResource.getContentAsString(Charset.defaultCharset());
 
@@ -209,6 +238,15 @@ public class PetControllerIntegrationTest {
                 .andReturn();
 
         JSONAssert.assertEquals(getUserPetResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    public void getUserPetNotFound() throws Exception {
+        var bearerToken = withJwt();
+        api.perform(get("/users/pets/100").header("Authorization", bearerToken))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -230,6 +268,35 @@ public class PetControllerIntegrationTest {
                 .andReturn();
 
         JSONAssert.assertEquals(patchUserPetStatusResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    public void testPatchUserPetStatusBadRequest() throws Exception {
+        var bearerToken = withJwt();
+
+        var patchUserPetStatusRequestJson = patchUserPetStatusRequestResource
+                .getContentAsString(Charset.defaultCharset());
+
+        api.perform(patch("/users/pets/100/status")
+                        .header("Authorization", bearerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchUserPetStatusRequestJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    public void testPatchUserPetStatusNotFound() throws Exception {
+        var bearerToken = withJwt();
+
+        api.perform(patch("/users/pets/2/status")
+                        .header("Authorization", bearerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"action\": \"INVALID\"}"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -270,6 +337,14 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser
+    public void testGetUnadoptedPetNotFound() throws Exception {
+        api.perform(get("/pets/100")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
     public void testAdoptPet() throws Exception {
         var bearerToken = withJwt();
         var adoptPetResponseJson = adoptPetResponseResource.getContentAsString(Charset.defaultCharset());
@@ -280,5 +355,13 @@ public class PetControllerIntegrationTest {
                 .andReturn();
 
         JSONAssert.assertEquals(adoptPetResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    @WithMockUser
+    public void testAdoptPetNotFound() throws Exception {
+        api.perform(get("/pets/100")).andExpect(status().isNotFound());
     }
 }
