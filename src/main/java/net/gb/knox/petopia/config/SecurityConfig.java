@@ -33,6 +33,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         requests -> requests
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/swagger-ui/**"),
+                                        new AntPathRequestMatcher("/v3/api-docs/**")
+                                )
+                                .permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/admin/**"))
                                 .hasRole("admin")
                                 .anyRequest()
