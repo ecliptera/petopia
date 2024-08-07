@@ -70,6 +70,24 @@ public class PetControllerIntegrationTest {
     @Value("classpath:data/adopt-pet-response.json")
     private Resource adoptPetResponseResource;
 
+    @Value("classpath:data/get-user-pets-response.json")
+    private Resource getUserPetsResponseResource;
+
+    private String withJwt() {
+        Jwt jwt = new Jwt(
+                "mock",
+                Instant.now(),
+                Instant.now().plusSeconds(3600),
+                Map.of("alg", "none"),
+                Map.of("sub", "006620a5-c90a-431a-9192-e23014620380")
+        );
+        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+        JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return String.format("Bearer %s", jwt.getTokenValue());
+    }
+
     @BeforeEach
     public void beforeEach() {
         var fixedInstant = Instant.parse("2024-01-01T00:00:00Z");
@@ -189,26 +207,30 @@ public class PetControllerIntegrationTest {
         JSONAssert.assertEquals(getUnadoptedPetResponseJson, result.getResponse().getContentAsString(), true);
     }
 
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    public void testGetUserPets() throws Exception {
+        var bearerToken = withJwt();
+        var getUserPetsResponseJson = getUserPetsResponseResource.getContentAsString(Charset.defaultCharset());
+
+        var result = api
+                .perform(get("/users/pets").header("Authorization", bearerToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JSONAssert.assertEquals(getUserPetsResponseJson, result.getResponse().getContentAsString(), true);
+    }
 
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
     public void testAdoptPet() throws Exception {
-        Jwt jwt = new Jwt(
-                "mock",
-                Instant.now(),
-                Instant.now().plusSeconds(3600),
-                Map.of("alg", "none"),
-                Map.of("sub", "user")
-        );
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
-        JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        var bearerToken = withJwt();
         var adoptPetResponseJson = adoptPetResponseResource.getContentAsString(Charset.defaultCharset());
 
         var result = api
-                .perform(post("/pets/1/adoptions").header("Authorization", "Bearer mock"))
+                .perform(post("/pets/1/adoptions").header("Authorization", bearerToken))
                 .andExpect(status().isCreated())
                 .andReturn();
 

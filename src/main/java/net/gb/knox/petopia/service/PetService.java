@@ -86,7 +86,18 @@ public class PetService {
 
     public List<PetResponseDto> getAllUnadopted(String sortBy, String direction) {
         var sort = createSort(sortBy, direction);
-        var petModels = sort == null ? petRepository.findAllByAdoptionIdNull() : petRepository.findAllByAdoptionIdNull(sort);
+        var petModels = sort == null
+                ? petRepository.findAllByAdoptionIdNull()
+                : petRepository.findAllByAdoptionIdNull(sort);
+
+        return petModels.stream().map(PetConverter::modelToResponseDto).toList();
+    }
+
+    public List<PetResponseDto> getAllUserPets(String userId, String sortBy, String direction) {
+        var sort = createSort(sortBy, direction);
+        var petModels = sort == null
+                ? petRepository.findAllByAdopterId(userId)
+                : petRepository.findAllByAdopterId(userId, sort);
 
         return petModels.stream().map(PetConverter::modelToResponseDto).toList();
     }
