@@ -26,7 +26,7 @@ public class PetController {
 
     @PostMapping("/admin/pets")
     public ResponseEntity<PetResponseDto> createPet(@RequestBody CreatePetRequestDto createPetRequestDto) throws URISyntaxException {
-        var petResponseDto = petService.create(createPetRequestDto);
+        var petResponseDto = petService.createPet(createPetRequestDto);
         var location = new URI(String.format("/pets/%s", petResponseDto.id()));
         return ResponseEntity.created(location).body(petResponseDto);
     }
@@ -36,13 +36,13 @@ public class PetController {
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String direction
     ) {
-        var petResponseDtos = petService.getAll(sortBy, direction);
+        var petResponseDtos = petService.getAllPets(sortBy, direction);
         return ResponseEntity.ok(petResponseDtos);
     }
 
     @GetMapping("/admin/pets/{id}")
     public ResponseEntity<PetResponseDto> getPetById(@PathVariable Integer id) {
-        var petResponseDto = petService.get(id);
+        var petResponseDto = petService.getPet(id);
         return ResponseEntity.ok(petResponseDto);
     }
 
@@ -51,13 +51,13 @@ public class PetController {
             @PathVariable Integer id,
             @RequestBody UpdatePetRequestDto updatePetRequestDto
     ) {
-        var petResponseDto = petService.update(id, updatePetRequestDto);
+        var petResponseDto = petService.updatePet(id, updatePetRequestDto);
         return ResponseEntity.ok(petResponseDto);
     }
 
     @DeleteMapping("/admin/pets/{id}")
     public ResponseEntity<Void> deletePet(@PathVariable Integer id) {
-        petService.delete(id);
+        petService.deletePet(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -76,13 +76,13 @@ public class PetController {
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String direction
     ) {
-        var petResponseDtos = petService.getAllUnadopted(sortBy, direction);
+        var petResponseDtos = petService.getAllUnadoptedPets(sortBy, direction);
         return ResponseEntity.ok(petResponseDtos);
     }
 
     @GetMapping("/pets/{id}")
     public ResponseEntity<PetResponseDto> getUnadoptedPet(@PathVariable Integer id) {
-        var petResponseDto = petService.getUnadopted(id);
+        var petResponseDto = petService.getUnadoptedPet(id);
         return ResponseEntity.ok(petResponseDto);
     }
 
@@ -91,7 +91,7 @@ public class PetController {
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable Integer id
     ) throws URISyntaxException {
-        var petResponseDto = petService.adopt(jwt.getSubject(), id);
+        var petResponseDto = petService.adoptPet(jwt.getSubject(), id);
         var location = new URI(String.format("/pets/%s/adoptions/%s", id, petResponseDto.adoption().getId()));
         return ResponseEntity.created(location).body(petResponseDto);
     }

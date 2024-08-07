@@ -53,7 +53,7 @@ public class PetService {
         return foundPetModel.get();
     }
 
-    public PetResponseDto create(CreatePetRequestDto createPetRequestDto) {
+    public PetResponseDto createPet(CreatePetRequestDto createPetRequestDto) {
         var petModel = PetConverter.createRequestDtoToModel(createPetRequestDto);
 
         petRepository.save(petModel);
@@ -61,7 +61,7 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto adopt(String userId, int petId) throws EntityNotFoundException {
+    public PetResponseDto adoptPet(String userId, int petId) throws EntityNotFoundException {
         var petModel = findById(petId);
 
         var adoptionModel = new AdoptionModel();
@@ -77,14 +77,14 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public List<PetResponseDto> getAll(String sortBy, String direction) {
+    public List<PetResponseDto> getAllPets(String sortBy, String direction) {
         var sort = createSort(sortBy, direction);
         var petModels = sort == null ? petRepository.findAll() : petRepository.findAll(sort);
 
         return petModels.stream().map(PetConverter::modelToResponseDto).toList();
     }
 
-    public List<PetResponseDto> getAllUnadopted(String sortBy, String direction) {
+    public List<PetResponseDto> getAllUnadoptedPets(String sortBy, String direction) {
         var sort = createSort(sortBy, direction);
         var petModels = sort == null
                 ? petRepository.findAllByAdoptionIdNull()
@@ -102,12 +102,12 @@ public class PetService {
         return petModels.stream().map(PetConverter::modelToResponseDto).toList();
     }
 
-    public PetResponseDto get(int id) throws EntityNotFoundException {
+    public PetResponseDto getPet(int id) throws EntityNotFoundException {
         var petModel = findById(id);
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto getUnadopted(int id) throws EntityNotFoundException {
+    public PetResponseDto getUnadoptedPet(int id) throws EntityNotFoundException {
         var petModel = petRepository.findByIdAndAdoptionIdNull(id);
         if (petModel == null) {
             throw new EntityNotFoundException(String.format("No unadopted pet model found with id = %s", id));
@@ -116,7 +116,7 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto update(int id, UpdatePetRequestDto updatePetRequestDto) throws EntityNotFoundException {
+    public PetResponseDto updatePet(int id, UpdatePetRequestDto updatePetRequestDto) throws EntityNotFoundException {
         var petModel = findById(id);
 
         if (updatePetRequestDto.taxon() != null) {
@@ -137,7 +137,7 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public void delete(int id) {
+    public void deletePet(int id) {
         petRepository.deleteById(id);
     }
 }

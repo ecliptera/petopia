@@ -41,7 +41,7 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testCreate() {
+    public void testCreatePet() {
         when(petRepository.save(any(PetModel.class))).then(invocation -> {
             PetModel petModel = invocation.getArgument(0);
             petModel.setId(1);
@@ -54,14 +54,14 @@ public class PetServiceUnitTest {
                 LocalDate.of(2020, 1, 1)
         );
 
-        var petResponseDto = petService.create(createPetResponseDto);
+        var petResponseDto = petService.createPet(createPetResponseDto);
 
         verify(petRepository, times(1)).save(any(PetModel.class));
         assertNotNull(petResponseDto);
     }
 
     @Test
-    public void testAdopt() {
+    public void testAdoptPet() {
         when(petRepository.findById(anyInt())).thenReturn(Optional.of(new PetModel()));
         when(petRepository.save(any(PetModel.class))).then(invocation -> {
             PetModel petModel = invocation.getArgument(0);
@@ -69,7 +69,7 @@ public class PetServiceUnitTest {
             return petModel;
         });
 
-        var petResponseDto = petService.adopt("006620a5-c90a-431a-9192-e23014620380", 1);
+        var petResponseDto = petService.adoptPet("006620a5-c90a-431a-9192-e23014620380", 1);
 
         verify(petRepository, times(1)).save(any(PetModel.class));
         assertNotNull(petResponseDto);
@@ -78,12 +78,12 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testGetAll() {
+    public void testGetAllPets() {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findAll()).thenReturn(List.of(petModel));
 
-        var petResponseDtos = petService.getAll(null, null);
+        var petResponseDtos = petService.getAllPets(null, null);
 
         verify(petRepository, times(1)).findAll();
         assertNotNull(petResponseDtos);
@@ -91,12 +91,12 @@ public class PetServiceUnitTest {
 
     @ParameterizedTest
     @CsvSource({"name, asc", "name, desc", "name, invalid"})
-    public void testGetAllWithSort(String sortBy, String direction) {
+    public void testGetAllPetsWithSort(String sortBy, String direction) {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findAll(any(Sort.class))).thenReturn(List.of(petModel));
 
-        var petResponseDtos = petService.getAll(sortBy, direction);
+        var petResponseDtos = petService.getAllPets(sortBy, direction);
 
         var numberOfInvocations = List.of("asc", "desc").contains(direction) ? 1 : 0;
         verify(petRepository, times(numberOfInvocations)).findAll(any(Sort.class));
@@ -104,12 +104,12 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testGetAllUnadopted() {
+    public void testGetAllUnadoptedPets() {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findAllByAdoptionIdNull()).thenReturn(List.of(petModel));
 
-        var petResponseDtos = petService.getAllUnadopted(null, null);
+        var petResponseDtos = petService.getAllUnadoptedPets(null, null);
 
         verify(petRepository, times(1)).findAllByAdoptionIdNull();
         assertNotNull(petResponseDtos);
@@ -117,12 +117,12 @@ public class PetServiceUnitTest {
 
     @ParameterizedTest
     @CsvSource({"name, asc", "name, desc", "name, invalid"})
-    public void testGetAllUnadoptedWithSort(String sortBy, String direction) {
+    public void testGetAllUnadoptedPetsWithSort(String sortBy, String direction) {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findAllByAdoptionIdNull(any(Sort.class))).thenReturn(List.of(petModel));
 
-        var petResponseDtos = petService.getAllUnadopted(sortBy, direction);
+        var petResponseDtos = petService.getAllUnadoptedPets(sortBy, direction);
 
         var numberOfInvocations = List.of("asc", "desc").contains(direction) ? 1 : 0;
         verify(petRepository, times(numberOfInvocations)).findAllByAdoptionIdNull(any(Sort.class));
@@ -156,49 +156,49 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testGet() {
+    public void testGetPet() {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findById(anyInt())).thenReturn(Optional.of(petModel));
 
-        var petResponseDto = petService.get(1);
+        var petResponseDto = petService.getPet(1);
 
         verify(petRepository, times(1)).findById(anyInt());
         assertNotNull(petResponseDto);
     }
 
     @Test
-    public void testGetThrows() {
+    public void testGetPetThrows() {
         when(petRepository.findById(anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> petService.get(1));
+        assertThrows(EntityNotFoundException.class, () -> petService.getPet(1));
     }
 
     @Test
-    public void testGetUnadopted() {
+    public void testGetUnadoptedPet() {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findByIdAndAdoptionIdNull(anyInt())).thenReturn(petModel);
 
-        var petResponseDto = petService.getUnadopted(1);
+        var petResponseDto = petService.getUnadoptedPet(1);
 
         verify(petRepository, times(1)).findByIdAndAdoptionIdNull(anyInt());
         assertNotNull(petResponseDto);
     }
 
     @Test
-    public void testGetUnadoptedThrows() {
+    public void testGetUnadoptedPetThrows() {
         when(petRepository.findByIdAndAdoptionIdNull(anyInt())).thenReturn(null);
-        assertThrows(EntityNotFoundException.class, () -> petService.getUnadopted(1));
+        assertThrows(EntityNotFoundException.class, () -> petService.getUnadoptedPet(1));
     }
 
     @ParameterizedTest
     @MethodSource("updatePetRequestDtoProvider")
-    public void testUpdate(UpdatePetRequestDto updatePetRequestDto) {
+    public void testUpdatePet(UpdatePetRequestDto updatePetRequestDto) {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findById(anyInt())).thenReturn(Optional.of(petModel));
 
-        var petResponseDto = petService.update(1, updatePetRequestDto);
+        var petResponseDto = petService.updatePet(1, updatePetRequestDto);
 
         verify(petRepository, times(1)).save(any(PetModel.class));
         assertEquals(updatePetRequestDto.taxon(), petResponseDto.taxon());
@@ -208,8 +208,8 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testDelete() {
-        petService.delete(1);
+    public void testDeletePet() {
+        petService.deletePet(1);
         verify(petRepository, times(1)).deleteById(anyInt());
     }
 }

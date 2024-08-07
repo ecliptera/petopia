@@ -210,7 +210,7 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
-    public void testGetUserPets() throws Exception {
+    public void testGetAllUserPets() throws Exception {
         var bearerToken = withJwt();
         var getUserPetsResponseJson = getUserPetsResponseResource.getContentAsString(Charset.defaultCharset());
 
