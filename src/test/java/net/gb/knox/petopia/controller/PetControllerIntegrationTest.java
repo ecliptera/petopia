@@ -76,6 +76,12 @@ public class PetControllerIntegrationTest {
     @Value("classpath:data/get-user-pet-response.json")
     private Resource getUserPetResponseResource;
 
+    @Value("classpath:data/patch-user-pet-status-request.json")
+    private Resource patchUserPetStatusRequestResource;
+
+    @Value("classpath:data/patch-user-pet-status-response.json")
+    private Resource patchUserPetStatusResponseResource;
+
     private String withJwt() {
         Jwt jwt = new Jwt(
                 "mock",
@@ -208,6 +214,27 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    public void testPatchUserPetStatus() throws Exception {
+        var bearerToken = withJwt();
+        var patchUserPetStatusRequestJson = patchUserPetStatusRequestResource
+                .getContentAsString(Charset.defaultCharset());
+        var patchUserPetStatusResponseJson = patchUserPetStatusResponseResource
+                .getContentAsString(Charset.defaultCharset());
+
+        var result = api
+                .perform(patch("/users/pets/2/status")
+                        .header("Authorization", bearerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patchUserPetStatusRequestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JSONAssert.assertEquals(patchUserPetStatusResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
     @WithMockUser
     public void testGetAllUnadoptedPets() throws Exception {
         var getAllUnadoptedPetsResponseJson = getAllUnadoptedPetsResponseResource
@@ -224,7 +251,6 @@ public class PetControllerIntegrationTest {
                 true
         );
     }
-
 
     @Test
     @DirtiesContext

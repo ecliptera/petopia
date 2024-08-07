@@ -1,14 +1,15 @@
 package net.gb.knox.petopia.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import net.gb.knox.petopia.converter.PetConverter;
-import net.gb.knox.petopia.domain.CreatePetRequestDto;
-import net.gb.knox.petopia.domain.PetResponseDto;
-import net.gb.knox.petopia.domain.UpdatePetRequestDto;
+import net.gb.knox.petopia.domain.*;
+import net.gb.knox.petopia.exception.InvalidStatusActionException;
+import net.gb.knox.petopia.exception.ResourceNotFoundException;
+import net.gb.knox.petopia.exception.UnsupportedStatusActionException;
 import net.gb.knox.petopia.model.AdoptionModel;
 import net.gb.knox.petopia.model.PetModel;
 import net.gb.knox.petopia.model.StatusModel;
 import net.gb.knox.petopia.repository.PetRepository;
+import net.gb.knox.petopia.utility.StatusActionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,13 @@ public class PetService {
 
     private final PetRepository petRepository;
 
+    private final StatusActionHelper statusActionHelper;
+
     @Autowired
-    public PetService(Clock clock, PetRepository petRepository) {
+    public PetService(Clock clock, PetRepository petRepository, StatusActionHelper statusActionHelper) {
         this.clock = clock;
         this.petRepository = petRepository;
+        this.statusActionHelper = statusActionHelper;
     }
 
     private Sort createSort(String sortBy, String direction) {
@@ -44,10 +48,10 @@ public class PetService {
         return sort;
     }
 
-    private PetModel findById(int id) throws EntityNotFoundException {
+    private PetModel findById(int id) throws ResourceNotFoundException {
         var foundPetModel = petRepository.findById(id);
         if (foundPetModel.isEmpty()) {
-            throw new EntityNotFoundException(String.format("No pet model found with id = %s", id));
+            throw new ResourceNotFoundException(String.format("No pet model found with id = %s", id));
         }
 
         return foundPetModel.get();
@@ -61,7 +65,7 @@ public class PetService {
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto adoptPet(String userId, int petId) throws EntityNotFoundException {
+    public PetResponseDto adoptPet(String userId, int petId) throws ResourceNotFoundException {
         var petModel = findById(petId);
 
         var adoptionModel = new AdoptionModel();
@@ -102,30 +106,69 @@ public class PetService {
         return petModels.stream().map(PetConverter::modelToResponseDto).toList();
     }
 
-    public PetResponseDto getUserPet(int id, String userId) throws EntityNotFoundException {
+    public PetResponseDto getUserPet(int id, String userId) throws ResourceNotFoundException {
         var petModel = petRepository.findByIdAndAdopterId(id, userId);
         if (petModel == null) {
-            throw new EntityNotFoundException(String.format("No pet model found with id = %s", id));
+            throw new ResourceNotFoundException(
+                    String.format("No pet model found with id = %s and adopter id = %s", id, userId)
+            );
         }
 
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto getPet(int id) throws EntityNotFoundException {
+    public PetResponseDto patchUserPetStatus(
+            int id,
+            String userId,
+            PatchUserPetStatusRequestDto patchUserPetStatusRequestDto
+    ) throws InvalidStatusActionException, ResourceNotFoundException, UnsupportedStatusActionException {
+
+        var petModel = petRepository.findByIdAndAdopterId(id, userId);
+        if (petModel == null) {
+            throw new ResourceNotFoundException(
+                    String.format("No pet model found with id = %s and adopter id = %s", id, userId)
+            );
+        }
+
+        statusActionHelper.setPet(petModel);
+
+        StatusAction statusAction = null;
+        if (patchUserPetStatusRequestDto != null) {
+            statusAction = patchUserPetStatusRequestDto.action();
+        }
+        if (statusAction == null) {
+            throw new UnsupportedStatusActionException("Unsupported status action = null");
+        }
+        switch (statusAction) {
+            case FEED -> statusActionHelper.feed();
+            case PLAY -> statusActionHelper.play();
+            case GROOM -> statusActionHelper.groom();
+            case SLEEP -> statusActionHelper.sleep();
+            default -> throw new UnsupportedStatusActionException(
+                    String.format("Unsupported status action = %s", statusAction.name())
+            );
+        }
+
+        petRepository.save(petModel);
+
+        return PetConverter.modelToResponseDto(petModel);
+    }
+
+    public PetResponseDto getPet(int id) throws ResourceNotFoundException {
         var petModel = findById(id);
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto getUnadoptedPet(int id) throws EntityNotFoundException {
+    public PetResponseDto getUnadoptedPet(int id) throws ResourceNotFoundException {
         var petModel = petRepository.findByIdAndAdoptionIdNull(id);
         if (petModel == null) {
-            throw new EntityNotFoundException(String.format("No unadopted pet model found with id = %s", id));
+            throw new ResourceNotFoundException(String.format("No unadopted pet model found with id = %s", id));
         }
 
         return PetConverter.modelToResponseDto(petModel);
     }
 
-    public PetResponseDto updatePet(int id, UpdatePetRequestDto updatePetRequestDto) throws EntityNotFoundException {
+    public PetResponseDto updatePet(int id, UpdatePetRequestDto updatePetRequestDto) throws ResourceNotFoundException {
         var petModel = findById(id);
 
         if (updatePetRequestDto.taxon() != null) {

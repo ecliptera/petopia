@@ -2,7 +2,7 @@
   "id": 2,
   "taxon": "CAT",
   "species": "RAGDOLL",
-  "name": "Felicity",
+  "name": "Penny",
   "birthDate": "2018-02-01",
   "adoption": {
     "id": 1,
@@ -12,8 +12,8 @@
   "status": {
     "id": 1,
     "cleanliness": 50,
-    "happiness": 50,
-    "hunger": 50,
-    "tiredness": 50
+    "happiness": 70,
+    "hunger": 60,
+    "tiredness": 60
   }
 }

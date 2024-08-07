@@ -13,7 +13,7 @@
     "id": 2,
     "cleanliness": 100,
     "happiness": 100,
-    "hunger": 100,
-    "tiredness": 100
+    "hunger": 0,
+    "tiredness": 0
   }
 }

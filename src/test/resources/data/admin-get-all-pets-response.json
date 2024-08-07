@@ -21,10 +21,10 @@
     },
     "status": {
       "id": 1,
-      "cleanliness": 100,
-      "happiness": 100,
-      "hunger": 100,
-      "tiredness": 100
+      "cleanliness": 50,
+      "happiness": 50,
+      "hunger": 50,
+      "tiredness": 50
     }
   }
 ]

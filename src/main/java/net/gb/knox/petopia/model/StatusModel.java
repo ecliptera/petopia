@@ -30,9 +30,9 @@ public class StatusModel {
 
     @Min(0)
     @Max(100)
-    private int hunger = 100;
+    private int hunger = 0;
 
     @Min(0)
     @Max(100)
-    private int tiredness = 100;
+    private int tiredness = 0;
 }

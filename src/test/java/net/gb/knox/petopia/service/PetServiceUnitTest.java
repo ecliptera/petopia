@@ -1,12 +1,13 @@
 package net.gb.knox.petopia.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import net.gb.knox.petopia.domain.CreatePetRequestDto;
-import net.gb.knox.petopia.domain.Species;
-import net.gb.knox.petopia.domain.Taxon;
-import net.gb.knox.petopia.domain.UpdatePetRequestDto;
+import net.gb.knox.petopia.domain.*;
+import net.gb.knox.petopia.exception.InvalidStatusActionException;
+import net.gb.knox.petopia.exception.ResourceNotFoundException;
+import net.gb.knox.petopia.exception.UnsupportedStatusActionException;
 import net.gb.knox.petopia.model.PetModel;
+import net.gb.knox.petopia.model.StatusModel;
 import net.gb.knox.petopia.repository.PetRepository;
+import net.gb.knox.petopia.utility.StatusActionHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,7 +27,8 @@ import static org.mockito.Mockito.*;
 public class PetServiceUnitTest {
 
     private final PetRepository petRepository = mock(PetRepository.class);
-    private final PetService petService = new PetService(Clock.systemDefaultZone(), petRepository);
+    private final StatusActionHelper statusActionHelper = mock(StatusActionHelper.class);
+    private final PetService petService = new PetService(Clock.systemDefaultZone(), petRepository, statusActionHelper);
 
     private static Stream<Arguments> updatePetRequestDtoProvider() {
         return Stream.of(
@@ -61,7 +63,7 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testAdoptPet() {
+    public void testAdoptPet() throws ResourceNotFoundException {
         when(petRepository.findById(anyInt())).thenReturn(Optional.of(new PetModel()));
         when(petRepository.save(any(PetModel.class))).then(invocation -> {
             PetModel petModel = invocation.getArgument(0);
@@ -156,7 +158,7 @@ public class PetServiceUnitTest {
     }
 
     @Test
-    public void testGetPet() {
+    public void testGetPet() throws ResourceNotFoundException {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findById(anyInt())).thenReturn(Optional.of(petModel));
@@ -170,11 +172,11 @@ public class PetServiceUnitTest {
     @Test
     public void testGetPetThrows() {
         when(petRepository.findById(anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> petService.getPet(1));
+        assertThrows(ResourceNotFoundException.class, () -> petService.getPet(1));
     }
 
     @Test
-    public void testGetUserPet() {
+    public void testGetUserPet() throws ResourceNotFoundException {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(petModel);
@@ -188,11 +190,53 @@ public class PetServiceUnitTest {
     @Test
     public void testGetUserPetThrows() {
         when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(null);
-        assertThrows(EntityNotFoundException.class, () -> petService.getUserPet(1, ""));
+        assertThrows(ResourceNotFoundException.class, () -> petService.getUserPet(1, ""));
     }
 
     @Test
-    public void testGetUnadoptedPet() {
+    public void testPatchUserPetStatus()
+            throws InvalidStatusActionException, UnsupportedStatusActionException, ResourceNotFoundException {
+        var petModel = new PetModel();
+        petModel.setId(1);
+        petModel.setStatus(new StatusModel());
+        when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(petModel);
+
+        var patchUserPetStatusRequestDto = new PatchUserPetStatusRequestDto(StatusAction.FEED);
+
+        var petResponseDto = petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto);
+
+        verify(petRepository, times(1)).findByIdAndAdopterId(anyInt(), anyString());
+        verify(statusActionHelper, times(1)).feed();
+        verify(petRepository, times(1)).save(any(PetModel.class));
+        assertNotNull(petResponseDto);
+    }
+
+    @Test
+    public void testPatchUserPetStatusThrows() throws InvalidStatusActionException {
+        var petModel = new PetModel();
+        petModel.setId(1);
+
+        when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(null).thenReturn(petModel);
+        doThrow(InvalidStatusActionException.class).when(statusActionHelper).feed();
+
+        var patchUserPetStatusRequestDto = new PatchUserPetStatusRequestDto(StatusAction.FEED);
+
+        assertThrows(
+                ResourceNotFoundException.class,
+                () -> petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto)
+        );
+        assertThrows(
+                InvalidStatusActionException.class,
+                () -> petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto)
+        );
+        assertThrows(
+                UnsupportedStatusActionException.class,
+                () -> petService.patchUserPetStatus(1, "", null)
+        );
+    }
+
+    @Test
+    public void testGetUnadoptedPet() throws ResourceNotFoundException {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findByIdAndAdoptionIdNull(anyInt())).thenReturn(petModel);
@@ -206,12 +250,12 @@ public class PetServiceUnitTest {
     @Test
     public void testGetUnadoptedPetThrows() {
         when(petRepository.findByIdAndAdoptionIdNull(anyInt())).thenReturn(null);
-        assertThrows(EntityNotFoundException.class, () -> petService.getUnadoptedPet(1));
+        assertThrows(ResourceNotFoundException.class, () -> petService.getUnadoptedPet(1));
     }
 
     @ParameterizedTest
     @MethodSource("updatePetRequestDtoProvider")
-    public void testUpdatePet(UpdatePetRequestDto updatePetRequestDto) {
+    public void testUpdatePet(UpdatePetRequestDto updatePetRequestDto) throws ResourceNotFoundException {
         var petModel = new PetModel();
         petModel.setId(1);
         when(petRepository.findById(anyInt())).thenReturn(Optional.of(petModel));

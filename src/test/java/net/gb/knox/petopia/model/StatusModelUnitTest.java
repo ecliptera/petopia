@@ -58,8 +58,8 @@ public class StatusModelUnitTest {
 
         assertEquals(100, status.getHappiness());
         assertEquals(100, status.getCleanliness());
-        assertEquals(100, status.getHunger());
-        assertEquals(100, status.getTiredness());
+        assertEquals(0, status.getHunger());
+        assertEquals(0, status.getTiredness());
     }
 
     @ParameterizedTest
