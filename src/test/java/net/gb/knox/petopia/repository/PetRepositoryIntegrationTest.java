@@ -152,6 +152,28 @@ public class PetRepositoryIntegrationTest {
     }
 
     @Test
+    public void testFindByIdAndAdopterId() {
+        var petModel = createPetModel();
+        var adoptedPetModel = createPetModel();
+        adoptedPetModel.setAdoption(createAdoptionModel());
+
+        petRepository.saveAllAndFlush(List.of(petModel, adoptedPetModel));
+
+        var foundPetModel = petRepository.findByIdAndAdopterId(
+                petModel.getId(),
+                adoptedPetModel.getAdoption().getAdopterId()
+        );
+        assertNull(foundPetModel);
+
+        var foundAdoptedPetModel = petRepository.findByIdAndAdopterId(
+                adoptedPetModel.getId(),
+                adoptedPetModel.getAdoption().getAdopterId()
+        );
+        assertNotNull(foundAdoptedPetModel);
+
+    }
+
+    @Test
     public void testUpdate() {
         var petModel = createPetModel();
         petRepository.saveAndFlush(petModel);

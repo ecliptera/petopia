@@ -70,8 +70,11 @@ public class PetControllerIntegrationTest {
     @Value("classpath:data/adopt-pet-response.json")
     private Resource adoptPetResponseResource;
 
-    @Value("classpath:data/get-user-pets-response.json")
-    private Resource getUserPetsResponseResource;
+    @Value("classpath:data/get-all-user-pets-response.json")
+    private Resource getAllUserPetsResponseResource;
+
+    @Value("classpath:data/get-user-pet-response.json")
+    private Resource getUserPetResponseResource;
 
     private String withJwt() {
         Jwt jwt = new Jwt(
@@ -175,6 +178,36 @@ public class PetControllerIntegrationTest {
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
+    public void testGetAllUserPets() throws Exception {
+        var bearerToken = withJwt();
+        var getAllUserPetsResponseJson = getAllUserPetsResponseResource.getContentAsString(Charset.defaultCharset());
+
+        var result = api
+                .perform(get("/users/pets").header("Authorization", bearerToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JSONAssert.assertEquals(getAllUserPetsResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
+    public void testGetUserPets() throws Exception {
+        var bearerToken = withJwt();
+        var getUserPetResponseJson = getUserPetResponseResource.getContentAsString(Charset.defaultCharset());
+
+        var result = api
+                .perform(get("/users/pets/2").header("Authorization", bearerToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JSONAssert.assertEquals(getUserPetResponseJson, result.getResponse().getContentAsString(), true);
+    }
+
+    @Test
+    @DirtiesContext
+    @Sql(scripts = "/sql/pets.sql")
     @WithMockUser
     public void testGetAllUnadoptedPets() throws Exception {
         var getAllUnadoptedPetsResponseJson = getAllUnadoptedPetsResponseResource
@@ -192,6 +225,7 @@ public class PetControllerIntegrationTest {
         );
     }
 
+
     @Test
     @DirtiesContext
     @Sql(scripts = "/sql/pets.sql")
@@ -205,21 +239,6 @@ public class PetControllerIntegrationTest {
                 .andReturn();
 
         JSONAssert.assertEquals(getUnadoptedPetResponseJson, result.getResponse().getContentAsString(), true);
-    }
-
-    @Test
-    @DirtiesContext
-    @Sql(scripts = "/sql/pets.sql")
-    public void testGetAllUserPets() throws Exception {
-        var bearerToken = withJwt();
-        var getUserPetsResponseJson = getUserPetsResponseResource.getContentAsString(Charset.defaultCharset());
-
-        var result = api
-                .perform(get("/users/pets").header("Authorization", bearerToken))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        JSONAssert.assertEquals(getUserPetsResponseJson, result.getResponse().getContentAsString(), true);
     }
 
     @Test

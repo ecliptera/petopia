@@ -71,6 +71,12 @@ public class PetController {
         return ResponseEntity.ok(petResponseDtos);
     }
 
+    @GetMapping("/users/pets/{id}")
+    public ResponseEntity<PetResponseDto> getUserPet(@AuthenticationPrincipal Jwt jwt, @PathVariable Integer id) {
+        var petResponseDto = petService.getUserPet(id, jwt.getSubject());
+        return ResponseEntity.ok(petResponseDto);
+    }
+
     @GetMapping("/pets")
     public ResponseEntity<List<PetResponseDto>> getAllUnadoptedPets(
             @RequestParam(required = false) String sortBy,

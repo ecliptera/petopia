@@ -174,6 +174,24 @@ public class PetServiceUnitTest {
     }
 
     @Test
+    public void testGetUserPet() {
+        var petModel = new PetModel();
+        petModel.setId(1);
+        when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(petModel);
+
+        var petResponseDto = petService.getUserPet(1, "");
+
+        verify(petRepository, times(1)).findByIdAndAdopterId(anyInt(), anyString());
+        assertNotNull(petResponseDto);
+    }
+
+    @Test
+    public void testGetUserPetThrows() {
+        when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(null);
+        assertThrows(EntityNotFoundException.class, () -> petService.getUserPet(1, ""));
+    }
+
+    @Test
     public void testGetUnadoptedPet() {
         var petModel = new PetModel();
         petModel.setId(1);

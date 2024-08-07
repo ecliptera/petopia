@@ -21,4 +21,7 @@ public interface PetRepository extends JpaRepository<PetModel, Integer> {
 
     @Query("SELECT pm FROM PetModel pm JOIN pm.adoption am WHERE am.adopterId = :id")
     List<PetModel> findAllByAdopterId(String id, Sort sort);
+
+    @Query("SELECT pm FROM PetModel pm JOIN pm.adoption am WHERE am.adopterId = :adopterId AND pm.id = :petId")
+    PetModel findByIdAndAdopterId(int petId, String adopterId);
 }

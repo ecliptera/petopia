@@ -102,6 +102,15 @@ public class PetService {
         return petModels.stream().map(PetConverter::modelToResponseDto).toList();
     }
 
+    public PetResponseDto getUserPet(int id, String userId) throws EntityNotFoundException {
+        var petModel = petRepository.findByIdAndAdopterId(id, userId);
+        if (petModel == null) {
+            throw new EntityNotFoundException(String.format("No pet model found with id = %s", id));
+        }
+
+        return PetConverter.modelToResponseDto(petModel);
+    }
+
     public PetResponseDto getPet(int id) throws EntityNotFoundException {
         var petModel = findById(id);
         return PetConverter.modelToResponseDto(petModel);
