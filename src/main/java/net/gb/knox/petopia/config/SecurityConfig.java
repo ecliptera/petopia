@@ -29,28 +29,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        requests -> requests
-                                .requestMatchers(
-                                        new AntPathRequestMatcher("/swagger-ui/**"),
-                                        new AntPathRequestMatcher("/v3/api-docs/**")
-                                )
-                                .permitAll()
-                                .requestMatchers(new AntPathRequestMatcher("/admin/**"))
-                                .hasRole("admin")
-                                .anyRequest()
-                                .authenticated()
-                )
-                .oauth2ResourceServer(
-                        server -> server.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))
-                )
-                .build();
+        return http.csrf(AbstractHttpConfigurer::disable)
+                   .authorizeHttpRequests(
+                           requests -> requests.requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"),
+                                                                new AntPathRequestMatcher("/v3/api-docs/**")
+                                               )
+                                               .permitAll()
+                                               .requestMatchers(new AntPathRequestMatcher("/admin/**"))
+                                               .hasRole("admin")
+                                               .anyRequest()
+                                               .authenticated())
+                   .oauth2ResourceServer(server -> server.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
+                   .build();
     }
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri)
+                               .build();
     }
 }

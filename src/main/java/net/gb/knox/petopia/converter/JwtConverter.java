@@ -45,10 +45,9 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
             roles.addAll(groupsClaim);
         }
 
-        return roles
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(String.format("ROLE_%s", role)))
-                .collect(Collectors.toSet());
+        return roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(String.format("ROLE_%s", role)))
+                    .collect(Collectors.toSet());
     }
 
     @Override

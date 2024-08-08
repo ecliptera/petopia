@@ -17,11 +17,7 @@ public class PetConverterUnitTest {
     @Test
     public void testCreateRequestDtoToModel() {
         var createPetRequestDto = new CreatePetRequestDto(
-                Taxon.DOG,
-                Species.LABRADOR,
-                "Buddy",
-                LocalDate.of(2020, 1, 1)
-        );
+                Taxon.DOG, Species.LABRADOR, "Buddy", LocalDate.of(2020, 1, 1));
         var petModel = PetConverter.createRequestDtoToModel(createPetRequestDto);
 
         assertEquals(createPetRequestDto.taxon(), petModel.getTaxon());

@@ -32,12 +32,7 @@ public class PetServiceUnitTest {
 
     private static Stream<Arguments> updatePetRequestDtoProvider() {
         return Stream.of(
-                Arguments.of(new UpdatePetRequestDto(
-                        Taxon.DOG,
-                        Species.LABRADOR,
-                        "Buddy",
-                        LocalDate.of(2020, 1, 1)
-                )),
+                Arguments.of(new UpdatePetRequestDto(Taxon.DOG, Species.LABRADOR, "Buddy", LocalDate.of(2020, 1, 1))),
                 Arguments.of(new UpdatePetRequestDto(null, null, null, null))
         );
     }
@@ -49,11 +44,8 @@ public class PetServiceUnitTest {
             petModel.setId(1);
             return petModel;
         });
-        var createPetResponseDto = new CreatePetRequestDto(
-                Taxon.DOG,
-                Species.LABRADOR,
-                "Buddy",
-                LocalDate.of(2020, 1, 1)
+        var createPetResponseDto = new CreatePetRequestDto(Taxon.DOG, Species.LABRADOR, "Buddy",
+                                                           LocalDate.of(2020, 1, 1)
         );
 
         var petResponseDto = petService.createPet(createPetResponseDto);
@@ -100,7 +92,8 @@ public class PetServiceUnitTest {
 
         var petResponseDtos = petService.getAllPets(sortBy, direction);
 
-        var numberOfInvocations = List.of("asc", "desc").contains(direction) ? 1 : 0;
+        var numberOfInvocations = List.of("asc", "desc")
+                                      .contains(direction) ? 1 : 0;
         verify(petRepository, times(numberOfInvocations)).findAll(any(Sort.class));
         assertNotNull(petResponseDtos);
     }
@@ -126,7 +119,8 @@ public class PetServiceUnitTest {
 
         var petResponseDtos = petService.getAllUnadoptedPets(sortBy, direction);
 
-        var numberOfInvocations = List.of("asc", "desc").contains(direction) ? 1 : 0;
+        var numberOfInvocations = List.of("asc", "desc")
+                                      .contains(direction) ? 1 : 0;
         verify(petRepository, times(numberOfInvocations)).findAllByAdoptionIdNull(any(Sort.class));
         assertNotNull(petResponseDtos);
     }
@@ -152,7 +146,8 @@ public class PetServiceUnitTest {
 
         var petResponseDtos = petService.getAllUserPets("", sortBy, direction);
 
-        var numberOfInvocations = List.of("asc", "desc").contains(direction) ? 1 : 0;
+        var numberOfInvocations = List.of("asc", "desc")
+                                      .contains(direction) ? 1 : 0;
         verify(petRepository, times(numberOfInvocations)).findAllByAdopterId(anyString(), any(Sort.class));
         assertNotNull(petResponseDtos);
     }
@@ -195,7 +190,7 @@ public class PetServiceUnitTest {
 
     @Test
     public void testPatchUserPetStatus()
-            throws InvalidStatusActionException, UnsupportedStatusActionException, ResourceNotFoundException {
+    throws InvalidStatusActionException, UnsupportedStatusActionException, ResourceNotFoundException {
         var petModel = new PetModel();
         petModel.setId(1);
         petModel.setStatus(new StatusModel());
@@ -216,23 +211,20 @@ public class PetServiceUnitTest {
         var petModel = new PetModel();
         petModel.setId(1);
 
-        when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(null).thenReturn(petModel);
-        doThrow(InvalidStatusActionException.class).when(statusActionHelper).feed();
+        when(petRepository.findByIdAndAdopterId(anyInt(), anyString())).thenReturn(null)
+                                                                       .thenReturn(petModel);
+        doThrow(InvalidStatusActionException.class).when(statusActionHelper)
+                                                   .feed();
 
         var patchUserPetStatusRequestDto = new PatchUserPetStatusRequestDto(StatusAction.FEED);
 
-        assertThrows(
-                ResourceNotFoundException.class,
-                () -> petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto)
+        assertThrows(ResourceNotFoundException.class,
+                     () -> petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto)
         );
-        assertThrows(
-                InvalidStatusActionException.class,
-                () -> petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto)
+        assertThrows(InvalidStatusActionException.class,
+                     () -> petService.patchUserPetStatus(1, "", patchUserPetStatusRequestDto)
         );
-        assertThrows(
-                UnsupportedStatusActionException.class,
-                () -> petService.patchUserPetStatus(1, "", null)
-        );
+        assertThrows(UnsupportedStatusActionException.class, () -> petService.patchUserPetStatus(1, "", null));
     }
 
     @Test

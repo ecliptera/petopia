@@ -7,14 +7,9 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
 public record CreatePetRequestDto(
-        @NotNull
-        Taxon taxon,
-        @NotNull
-        Species species,
-        @NotBlank
-        String name,
-        @NotNull
-        @PastOrPresent
-        LocalDate birthDate
+        @NotNull Taxon taxon,
+        @NotNull Species species,
+        @NotBlank String name,
+        @NotNull @PastOrPresent LocalDate birthDate
 ) {
 }

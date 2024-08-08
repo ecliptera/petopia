@@ -17,22 +17,10 @@ public class StatusModelUnitTest {
 
     private static Stream<Arguments> modelValidationProvider() {
         return Stream.of(
-                Arguments.of(
-                        new StatusModel(1, 100, 100, 100, 100),
-                        0
-                ),
-                Arguments.of(
-                        new StatusModel(1, 0, 0, 0, 0),
-                        0
-                ),
-                Arguments.of(
-                        new StatusModel(1, 101, 101, 101, 101),
-                        4
-                ),
-                Arguments.of(
-                        new StatusModel(1, -1, -1, -1, -1),
-                        4
-                )
+                Arguments.of(new StatusModel(1, 100, 100, 100, 100), 0),
+                Arguments.of(new StatusModel(1, 0, 0, 0, 0), 0),
+                Arguments.of(new StatusModel(1, 101, 101, 101, 101), 4),
+                Arguments.of(new StatusModel(1, -1, -1, -1, -1), 4)
         );
     }
 

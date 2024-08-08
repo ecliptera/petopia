@@ -83,16 +83,14 @@ public class PetControllerIntegrationTest {
     private Resource patchUserPetStatusResponseResource;
 
     private String withJwt() {
-        Jwt jwt = new Jwt(
-                "mock",
-                Instant.now(),
-                Instant.now().plusSeconds(3600),
-                Map.of("alg", "none"),
-                Map.of("sub", "006620a5-c90a-431a-9192-e23014620380")
+        Jwt jwt = new Jwt("mock", Instant.now(), Instant.now()
+                                                        .plusSeconds(3600), Map.of("alg", "none"),
+                          Map.of("sub", "006620a5-c90a-431a-9192-e23014620380")
         );
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);
         JwtAuthenticationToken authentication = new JwtAuthenticationToken(jwt);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext()
+                             .setAuthentication(authentication);
 
         return String.format("Bearer %s", jwt.getTokenValue());
     }
@@ -111,16 +109,14 @@ public class PetControllerIntegrationTest {
         var adminCreatePetRequestJson = adminCreatePetRequestResource.getContentAsString(Charset.defaultCharset());
         var adminCreatePetResponseJson = adminCreatePetResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(
-                        post("/admin/pets")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(adminCreatePetRequestJson)
-                )
-                .andExpect(status().isCreated())
-                .andReturn();
+        var result = api.perform(post("/admin/pets").contentType(MediaType.APPLICATION_JSON)
+                                                    .content(adminCreatePetRequestJson))
+                        .andExpect(status().isCreated())
+                        .andReturn();
 
-        JSONAssert.assertEquals(adminCreatePetResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(adminCreatePetResponseJson, responseJson, true);
     }
 
     @Test
@@ -130,12 +126,13 @@ public class PetControllerIntegrationTest {
     public void testGetAllPets() throws Exception {
         var adminGetAllPetsResponseJson = adminGetAllPetsResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(get("/admin/pets"))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(get("/admin/pets"))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(adminGetAllPetsResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(adminGetAllPetsResponseJson, responseJson, true);
     }
 
     @Test
@@ -145,12 +142,13 @@ public class PetControllerIntegrationTest {
     public void testGetPetById() throws Exception {
         var adminGetPetResponseJson = adminGetPetResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(get("/admin/pets/2"))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(get("/admin/pets/2"))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(adminGetPetResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(adminGetPetResponseJson, responseJson, true);
     }
 
     @Test
@@ -161,16 +159,14 @@ public class PetControllerIntegrationTest {
         var adminUpdatePetRequestJson = adminUpdatePetRequestResource.getContentAsString(Charset.defaultCharset());
         var adminUpdatePetResponseJson = adminUpdatePetResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(
-                        patch("/admin/pets/2")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(adminUpdatePetRequestJson)
-                )
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(patch("/admin/pets/2").contentType(MediaType.APPLICATION_JSON)
+                                                       .content(adminUpdatePetRequestJson))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(adminUpdatePetResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(adminUpdatePetResponseJson, responseJson, true);
     }
 
 
@@ -179,7 +175,8 @@ public class PetControllerIntegrationTest {
     @Sql(scripts = "/sql/pets.sql")
     @WithMockUser(roles = "admin")
     public void testDeletePet() throws Exception {
-        api.perform(delete("/admin/pets/2")).andExpect(status().isNoContent());
+        api.perform(delete("/admin/pets/2"))
+           .andExpect(status().isNoContent());
     }
 
     @Test
@@ -189,12 +186,13 @@ public class PetControllerIntegrationTest {
         var bearerToken = withJwt();
         var getAllUserPetsResponseJson = getAllUserPetsResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(get("/users/pets").header("Authorization", bearerToken))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(get("/users/pets").header("Authorization", bearerToken))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(getAllUserPetsResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(getAllUserPetsResponseJson, responseJson, true);
     }
 
     @Test
@@ -204,12 +202,13 @@ public class PetControllerIntegrationTest {
         var bearerToken = withJwt();
         var getUserPetResponseJson = getUserPetResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(get("/users/pets/2").header("Authorization", bearerToken))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(get("/users/pets/2").header("Authorization", bearerToken))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(getUserPetResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(getUserPetResponseJson, responseJson, true);
     }
 
 
@@ -218,20 +217,20 @@ public class PetControllerIntegrationTest {
     @Sql(scripts = "/sql/pets.sql")
     public void testPatchUserPetStatus() throws Exception {
         var bearerToken = withJwt();
-        var patchUserPetStatusRequestJson = patchUserPetStatusRequestResource
-                .getContentAsString(Charset.defaultCharset());
-        var patchUserPetStatusResponseJson = patchUserPetStatusResponseResource
-                .getContentAsString(Charset.defaultCharset());
+        var patchUserPetStatusRequestJson = patchUserPetStatusRequestResource.getContentAsString(
+                Charset.defaultCharset());
+        var patchUserPetStatusResponseJson = patchUserPetStatusResponseResource.getContentAsString(
+                Charset.defaultCharset());
 
-        var result = api
-                .perform(patch("/users/pets/2/status")
-                        .header("Authorization", bearerToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(patchUserPetStatusRequestJson))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(patch("/users/pets/2/status").header("Authorization", bearerToken)
+                                                              .contentType(MediaType.APPLICATION_JSON)
+                                                              .content(patchUserPetStatusRequestJson))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(patchUserPetStatusResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(patchUserPetStatusResponseJson, responseJson, true);
     }
 
 
@@ -240,19 +239,16 @@ public class PetControllerIntegrationTest {
     @Sql(scripts = "/sql/pets.sql")
     @WithMockUser
     public void testGetAllUnadoptedPets() throws Exception {
-        var getAllUnadoptedPetsResponseJson = getAllUnadoptedPetsResponseResource
-                .getContentAsString(Charset.defaultCharset());
+        var getAllUnadoptedPetsResponseJson = getAllUnadoptedPetsResponseResource.getContentAsString(
+                Charset.defaultCharset());
 
-        var result = api
-                .perform(get("/pets"))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(get("/pets"))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(
-                getAllUnadoptedPetsResponseJson,
-                result.getResponse().getContentAsString(),
-                true
-        );
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(getAllUnadoptedPetsResponseJson, responseJson, true);
     }
 
     @Test
@@ -262,12 +258,13 @@ public class PetControllerIntegrationTest {
     public void testGetUnadoptedPet() throws Exception {
         var getUnadoptedPetResponseJson = getUnadoptedPetResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(get("/pets/1"))
-                .andExpect(status().isOk())
-                .andReturn();
+        var result = api.perform(get("/pets/1"))
+                        .andExpect(status().isOk())
+                        .andReturn();
 
-        JSONAssert.assertEquals(getUnadoptedPetResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(getUnadoptedPetResponseJson, responseJson, true);
     }
 
     @Test
@@ -277,11 +274,12 @@ public class PetControllerIntegrationTest {
         var bearerToken = withJwt();
         var adoptPetResponseJson = adoptPetResponseResource.getContentAsString(Charset.defaultCharset());
 
-        var result = api
-                .perform(post("/pets/1/adoptions").header("Authorization", bearerToken))
-                .andExpect(status().isCreated())
-                .andReturn();
+        var result = api.perform(post("/pets/1/adoptions").header("Authorization", bearerToken))
+                        .andExpect(status().isCreated())
+                        .andReturn();
 
-        JSONAssert.assertEquals(adoptPetResponseJson, result.getResponse().getContentAsString(), true);
+        var responseJson = result.getResponse()
+                                 .getContentAsString();
+        JSONAssert.assertEquals(adoptPetResponseJson, responseJson, true);
     }
 }

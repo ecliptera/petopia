@@ -16,30 +16,11 @@ public class UpdatePetRequestDtoUnitTest {
     private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
     private static Stream<Arguments> dtoValidationProvider() {
-        return Stream.of(
-                Arguments.of(
-                        new UpdatePetRequestDto(
-                                Taxon.DOG,
-                                Species.LABRADOR,
-                                "Buddy",
-                                LocalDate.of(2020, 1, 1)
-                        ),
-                        0
-                ),
-                Arguments.of(
-                        new UpdatePetRequestDto(null, null, null, null),
-                        0
-                ),
-                Arguments.of(
-                        new UpdatePetRequestDto(
-                                null,
-                                null,
-                                null,
-                                LocalDate.of(3000, 1, 1)
-                        ),
-                        1
-                )
-        );
+        var validDto = new UpdatePetRequestDto(Taxon.DOG, Species.LABRADOR, "Buddy", LocalDate.of(2020, 1, 1));
+        var nullDto = new UpdatePetRequestDto(null, null, null, null);
+        var futureDto = new UpdatePetRequestDto(null, null, null, LocalDate.of(3000, 1, 1));
+
+        return Stream.of(Arguments.of(validDto, 0), Arguments.of(nullDto, 0), Arguments.of(futureDto, 1));
     }
 
     @ParameterizedTest

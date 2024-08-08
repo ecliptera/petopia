@@ -8,7 +8,6 @@ public record UpdatePetRequestDto(
         Taxon taxon,
         Species species,
         String name,
-        @PastOrPresent
-        LocalDate birthDate
+        @PastOrPresent LocalDate birthDate
 ) {
 }

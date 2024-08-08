@@ -96,7 +96,10 @@ public class PetRepositoryIntegrationTest {
 
         assertNotNull(foundPetModels);
         assertEquals(2, foundPetModels.size());
-        assertArrayEquals(new String[]{"Ziggy", "Buddy"}, foundPetModels.stream().map(PetModel::getName).toArray());
+        assertArrayEquals(
+                new String[]{"Ziggy", "Buddy"}, foundPetModels.stream()
+                                                              .map(PetModel::getName)
+                                                              .toArray());
     }
 
     @Test
@@ -122,7 +125,8 @@ public class PetRepositoryIntegrationTest {
 
         petRepository.saveAllAndFlush(List.of(petModel, adoptedPetModel));
 
-        var foundPetModels = petRepository.findAllByAdopterId(adoptedPetModel.getAdoption().getAdopterId());
+        var foundPetModels = petRepository.findAllByAdopterId(adoptedPetModel.getAdoption()
+                                                                             .getAdopterId());
         assertNotNull(foundPetModels);
         assertEquals(1, foundPetModels.size());
         assertEquals(adoptedPetModel, foundPetModels.getFirst());
@@ -141,14 +145,17 @@ public class PetRepositoryIntegrationTest {
 
         petRepository.saveAllAndFlush(List.of(petModel1, petModel2, petModel3));
 
-        var foundPetModels = petRepository.findAllByAdopterId(
-                petModel1.getAdoption().getAdopterId(),
-                Sort.by(Sort.Direction.DESC, "name")
+        var foundPetModels = petRepository.findAllByAdopterId(petModel1.getAdoption()
+                                                                       .getAdopterId(),
+                                                              Sort.by(Sort.Direction.DESC, "name")
         );
 
         assertNotNull(foundPetModels);
         assertEquals(2, foundPetModels.size());
-        assertArrayEquals(new String[]{"Ziggy", "Buddy"}, foundPetModels.stream().map(PetModel::getName).toArray());
+        assertArrayEquals(
+                new String[]{"Ziggy", "Buddy"}, foundPetModels.stream()
+                                                              .map(PetModel::getName)
+                                                              .toArray());
     }
 
     @Test
@@ -160,14 +167,13 @@ public class PetRepositoryIntegrationTest {
         petRepository.saveAllAndFlush(List.of(petModel, adoptedPetModel));
 
         var foundPetModel = petRepository.findByIdAndAdopterId(
-                petModel.getId(),
-                adoptedPetModel.getAdoption().getAdopterId()
-        );
+                petModel.getId(), adoptedPetModel.getAdoption()
+                                                 .getAdopterId());
         assertNull(foundPetModel);
 
-        var foundAdoptedPetModel = petRepository.findByIdAndAdopterId(
-                adoptedPetModel.getId(),
-                adoptedPetModel.getAdoption().getAdopterId()
+        var foundAdoptedPetModel = petRepository.findByIdAndAdopterId(adoptedPetModel.getId(),
+                                                                      adoptedPetModel.getAdoption()
+                                                                                     .getAdopterId()
         );
         assertNotNull(foundAdoptedPetModel);
 

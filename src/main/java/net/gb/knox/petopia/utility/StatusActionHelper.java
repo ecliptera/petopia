@@ -26,24 +26,21 @@ public class StatusActionHelper {
     private void assertTiredness() throws InvalidStatusActionException {
         if (status.getTiredness() == 100) {
             throw new InvalidStatusActionException(
-                    String.format("%s is too tired, they need to sleep first", pet.getName())
-            );
+                    String.format("%s is too tired, they need to sleep first", pet.getName()));
         }
     }
 
     private void assertHunger() throws InvalidStatusActionException {
         if (status.getHunger() == 100) {
             throw new InvalidStatusActionException(
-                    String.format("%s is too hungry, they need to eat first", pet.getName())
-            );
+                    String.format("%s is too hungry, they need to eat first", pet.getName()));
         }
     }
 
     private void assertCleanliness() throws InvalidStatusActionException {
         if (status.getCleanliness() == 0) {
             throw new InvalidStatusActionException(
-                    String.format("%s is too dirty, they need to be groomed first", pet.getName())
-            );
+                    String.format("%s is too dirty, they need to be groomed first", pet.getName()));
         }
     }
 

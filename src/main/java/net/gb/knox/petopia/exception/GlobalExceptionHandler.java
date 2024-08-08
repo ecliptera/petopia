@@ -15,7 +15,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     private ErrorResponseDto createErrorResponse(Exception e) {
-        var simpleName = e.getClass().getSimpleName();
+        var simpleName = e.getClass()
+                          .getSimpleName();
         var code = simpleName.replace("Exception", "");
 
         if (code.isEmpty()) {
@@ -36,9 +37,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponseDto> handleValidationExceptionAsBadRequest(MethodArgumentNotValidException e) {
+    public ResponseEntity<ValidationErrorResponseDto> handleValidationExceptionAsBadRequest(
+            MethodArgumentNotValidException e
+    ) {
         Map<String, String> fieldToError = new HashMap<>();
-        e.getBindingResult().getFieldErrors().forEach(fieldError -> fieldToError.put(fieldError.getField(), fieldError.getDefaultMessage()));
+        e.getBindingResult()
+         .getFieldErrors()
+         .forEach(fieldError -> fieldToError.put(fieldError.getField(), fieldError.getDefaultMessage()));
         return new ResponseEntity<>(new ValidationErrorResponseDto(fieldToError), HttpStatus.BAD_REQUEST);
     }
 

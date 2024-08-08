@@ -85,49 +85,49 @@ public class PetService {
         var sort = createSort(sortBy, direction);
         var petModels = sort == null ? petRepository.findAll() : petRepository.findAll(sort);
 
-        return petModels.stream().map(PetConverter::modelToResponseDto).toList();
+        return petModels.stream()
+                        .map(PetConverter::modelToResponseDto)
+                        .toList();
     }
 
     public List<PetResponseDto> getAllUnadoptedPets(String sortBy, String direction) {
         var sort = createSort(sortBy, direction);
-        var petModels = sort == null
-                ? petRepository.findAllByAdoptionIdNull()
-                : petRepository.findAllByAdoptionIdNull(sort);
+        var petModels = sort == null ? petRepository.findAllByAdoptionIdNull() :
+                petRepository.findAllByAdoptionIdNull(sort);
 
-        return petModels.stream().map(PetConverter::modelToResponseDto).toList();
+        return petModels.stream()
+                        .map(PetConverter::modelToResponseDto)
+                        .toList();
     }
 
     public List<PetResponseDto> getAllUserPets(String userId, String sortBy, String direction) {
         var sort = createSort(sortBy, direction);
-        var petModels = sort == null
-                ? petRepository.findAllByAdopterId(userId)
-                : petRepository.findAllByAdopterId(userId, sort);
+        var petModels = sort == null ? petRepository.findAllByAdopterId(userId) :
+                petRepository.findAllByAdopterId(userId, sort);
 
-        return petModels.stream().map(PetConverter::modelToResponseDto).toList();
+        return petModels.stream()
+                        .map(PetConverter::modelToResponseDto)
+                        .toList();
     }
 
     public PetResponseDto getUserPet(int id, String userId) throws ResourceNotFoundException {
         var petModel = petRepository.findByIdAndAdopterId(id, userId);
         if (petModel == null) {
             throw new ResourceNotFoundException(
-                    String.format("No pet model found with id = %s and adopter id = %s", id, userId)
-            );
+                    String.format("No pet model found with id = %s and adopter id = %s", id, userId));
         }
 
         return PetConverter.modelToResponseDto(petModel);
     }
 
     public PetResponseDto patchUserPetStatus(
-            int id,
-            String userId,
-            PatchUserPetStatusRequestDto patchUserPetStatusRequestDto
+            int id, String userId, PatchUserPetStatusRequestDto patchUserPetStatusRequestDto
     ) throws InvalidStatusActionException, ResourceNotFoundException, UnsupportedStatusActionException {
 
         var petModel = petRepository.findByIdAndAdopterId(id, userId);
         if (petModel == null) {
             throw new ResourceNotFoundException(
-                    String.format("No pet model found with id = %s and adopter id = %s", id, userId)
-            );
+                    String.format("No pet model found with id = %s and adopter id = %s", id, userId));
         }
 
         statusActionHelper.setPet(petModel);
@@ -145,8 +145,7 @@ public class PetService {
             case GROOM -> statusActionHelper.groom();
             case SLEEP -> statusActionHelper.sleep();
             default -> throw new UnsupportedStatusActionException(
-                    String.format("Unsupported status action = %s", statusAction.name())
-            );
+                    String.format("Unsupported status action = %s", statusAction.name()));
         }
 
         petRepository.save(petModel);

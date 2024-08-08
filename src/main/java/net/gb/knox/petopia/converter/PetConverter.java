@@ -17,14 +17,8 @@ public class PetConverter {
     }
 
     public static PetResponseDto modelToResponseDto(PetModel petModel) {
-        return new PetResponseDto(
-                petModel.getId(),
-                petModel.getTaxon(),
-                petModel.getSpecies(),
-                petModel.getName(),
-                petModel.getBirthDate(),
-                petModel.getAdoption(),
-                petModel.getStatus()
+        return new PetResponseDto(petModel.getId(), petModel.getTaxon(), petModel.getSpecies(), petModel.getName(),
+                                  petModel.getBirthDate(), petModel.getAdoption(), petModel.getStatus()
         );
     }
 }

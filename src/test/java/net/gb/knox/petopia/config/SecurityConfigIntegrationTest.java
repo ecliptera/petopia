@@ -19,35 +19,41 @@ public class SecurityConfigIntegrationTest {
 
     @Test
     public void testAuthenticatedEndpointWithAnonymousUser() throws Exception {
-        api.perform(get("/test/security")).andExpect(status().isUnauthorized());
+        api.perform(get("/test/security"))
+           .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser
     public void testAuthenticatedEndpointWithBasicUser() throws Exception {
-        api.perform(get("/test/security")).andExpect(status().isOk());
+        api.perform(get("/test/security"))
+           .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "admin")
     public void testAuthenticatedEndpointWithAdminUser() throws Exception {
-        api.perform(get("/test/security")).andExpect(status().isOk());
+        api.perform(get("/test/security"))
+           .andExpect(status().isOk());
     }
 
     @Test
     public void testAdminEndpointWithAnonymousUser() throws Exception {
-        api.perform(get("/admin/test/security")).andExpect(status().isUnauthorized());
+        api.perform(get("/admin/test/security"))
+           .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser
     public void testAdminEndpointWithBasicUser() throws Exception {
-        api.perform(get("/admin/test/security")).andExpect(status().isForbidden());
+        api.perform(get("/admin/test/security"))
+           .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "admin")
     public void testAdminEndpointWithAdminUser() throws Exception {
-        api.perform(get("/admin/test/security")).andExpect(status().isOk());
+        api.perform(get("/admin/test/security"))
+           .andExpect(status().isOk());
     }
 }

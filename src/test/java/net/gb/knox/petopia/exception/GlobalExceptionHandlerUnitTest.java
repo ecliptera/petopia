@@ -22,35 +22,35 @@ public class GlobalExceptionHandlerUnitTest {
     @WithMockUser
     public void testResourceNotFound() throws Exception {
         api.perform(get("/test/exception/resource-not-found"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("ResourceNotFound"))
-                .andExpect(jsonPath("$.message").value("Resource not found"));
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value("ResourceNotFound"))
+           .andExpect(jsonPath("$.message").value("Resource not found"));
     }
 
     @Test
     @WithMockUser
     public void testInvalidStatusAction() throws Exception {
         api.perform(get("/test/exception/invalid-status-action"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("InvalidStatusAction"))
-                .andExpect(jsonPath("$.message").value("Invalid status action"));
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value("InvalidStatusAction"))
+           .andExpect(jsonPath("$.message").value("Invalid status action"));
     }
 
     @Test
     @WithMockUser
     public void testUnsupportedStatusAction() throws Exception {
         api.perform(get("/test/exception/unsupported-status-action"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("UnsupportedStatusAction"))
-                .andExpect(jsonPath("$.message").value("Unsupported status action"));
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value("UnsupportedStatusAction"))
+           .andExpect(jsonPath("$.message").value("Unsupported status action"));
     }
 
     @Test
     @WithMockUser
     public void testException() throws Exception {
         api.perform(get("/test/exception"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value("General"))
-                .andExpect(jsonPath("$.message").value("Something went wrong"));
+           .andExpect(status().isInternalServerError())
+           .andExpect(jsonPath("$.code").value("General"))
+           .andExpect(jsonPath("$.message").value("Something went wrong"));
     }
 }

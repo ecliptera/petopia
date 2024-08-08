@@ -20,38 +20,15 @@ public class PetModelUnitTest {
     private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
     private static Stream<Arguments> modelValidationProvider() {
-        return Stream.of(
-                Arguments.of(
-                        new PetModel(
-                                1,
-                                Taxon.DOG,
-                                Species.LABRADOR,
-                                "Buddy",
-                                LocalDate.of(2020, 1, 1),
-                                new AdoptionModel(),
-                                new StatusModel()
-                        ),
-                        0
-                ),
-                Arguments.of(
-                        new PetModel(
-                                1, null, null, null, null, null, null
-                        ),
-                        4
-                ),
-                Arguments.of(
-                        new PetModel(
-                                1,
-                                Taxon.DOG,
-                                Species.LABRADOR,
-                                "Buddy",
-                                LocalDate.of(3000, 1, 1),
-                                new AdoptionModel(),
-                                new StatusModel()
-                        ),
-                        1
-                )
+        var validModel = new PetModel(1, Taxon.DOG, Species.LABRADOR, "Buddy", LocalDate.of(2020, 1, 1),
+                                      new AdoptionModel(), new StatusModel()
         );
+        var nullModel = new PetModel(1, null, null, null, null, null, null);
+        var futureModel = new PetModel(1, Taxon.DOG, Species.LABRADOR, "Buddy", LocalDate.of(3000, 1, 1),
+                                       new AdoptionModel(), new StatusModel()
+        );
+
+        return Stream.of(Arguments.of(validModel, 0), Arguments.of(nullModel, 4), Arguments.of(futureModel, 1));
     }
 
     @Test
