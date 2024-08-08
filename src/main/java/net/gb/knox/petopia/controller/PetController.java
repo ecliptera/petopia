@@ -1,5 +1,6 @@
 package net.gb.knox.petopia.controller;
 
+import jakarta.validation.Valid;
 import net.gb.knox.petopia.domain.CreatePetRequestDto;
 import net.gb.knox.petopia.domain.PatchUserPetStatusRequestDto;
 import net.gb.knox.petopia.domain.PetResponseDto;
@@ -29,7 +30,7 @@ public class PetController {
     }
 
     @PostMapping("/admin/pets")
-    public ResponseEntity<PetResponseDto> createPet(@RequestBody CreatePetRequestDto createPetRequestDto) throws URISyntaxException {
+    public ResponseEntity<PetResponseDto> createPet(@Valid @RequestBody CreatePetRequestDto createPetRequestDto) throws URISyntaxException {
         var petResponseDto = petService.createPet(createPetRequestDto);
         var location = new URI(String.format("/pets/%s", petResponseDto.id()));
         return ResponseEntity.created(location).body(petResponseDto);
@@ -53,7 +54,7 @@ public class PetController {
     @PatchMapping("/admin/pets/{id}")
     public ResponseEntity<PetResponseDto> updatePet(
             @PathVariable Integer id,
-            @RequestBody UpdatePetRequestDto updatePetRequestDto
+            @Valid @RequestBody UpdatePetRequestDto updatePetRequestDto
     ) throws ResourceNotFoundException {
         var petResponseDto = petService.updatePet(id, updatePetRequestDto);
         return ResponseEntity.ok(petResponseDto);
@@ -85,7 +86,7 @@ public class PetController {
     public ResponseEntity<PetResponseDto> patchUserPetStatus(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable Integer id,
-            @RequestBody PatchUserPetStatusRequestDto patchUserPetStatusRequestDto
+            @Valid @RequestBody PatchUserPetStatusRequestDto patchUserPetStatusRequestDto
     ) throws InvalidStatusActionException, UnsupportedStatusActionException, ResourceNotFoundException {
         var petResponseDto = petService.patchUserPetStatus(id, jwt.getSubject(), patchUserPetStatusRequestDto);
         return ResponseEntity.ok(petResponseDto);
