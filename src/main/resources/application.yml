@@ -17,6 +17,10 @@ spring:
         jwt:
           jwk-set-uri: "http://localhost:8000/realms/api.knox.gb.net/protocol/openid-connect/certs"
 
+springdoc:
+  swagger-ui:
+    operations-sorter: alpha
+
 server:
   servlet:
     context-path: /petopia
