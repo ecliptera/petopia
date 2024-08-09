@@ -19,13 +19,10 @@ public class AdoptionModelUnitTest {
 
     private static Stream<Arguments> modelValidationProvider() {
         var validModel = new AdoptionModel(1, "006620a5-c90a-431a-9192-e23014620380",
-                                           LocalDateTime.of(2024, 1, 1, 12, 0), new PetModel()
-        );
-        var nullModel = new AdoptionModel(1, "006620a5-c90a-431a-9192-e23014620380",
-                                          LocalDateTime.of(2024, 1, 1, 12, 0), new PetModel()
-        );
-        var futureModel = new AdoptionModel(
-                1, "006620a5-c90a-431a-9192-e23014620380", LocalDateTime.of(3000, 1, 1, 12, 0), null);
+                                           LocalDateTime.of(2024, 1, 1, 12, 0), new PetModel());
+        var nullModel = new AdoptionModel(1, null, null, null);
+        var futureModel = new AdoptionModel(1, "006620a5-c90a-431a-9192-e23014620380",
+                                            LocalDateTime.of(3000, 1, 1, 12, 0), null);
 
         return Stream.of(Arguments.of(validModel, 0), Arguments.of(nullModel, 2), Arguments.of(futureModel, 1));
     }
